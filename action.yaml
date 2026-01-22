@@ -33,7 +33,7 @@ runs:
       shell: bash
     # Normalize the repository name for use in .repo files
     - name: Normalize repository information
-      run: printf "NORMALIZED_REPOSITORY=%q\n" "$(sed 's,/,-,g' <<< '${{ inputs.to_path }}')" >> $GITHUB_ENV
+      run: printf "NORMALIZED_REPOSITORY=%q\n" "$(sed 's,/,-,g' <<< '${{ inputs.repository }}')" >> $GITHUB_ENV
       shell: bash
     # Generate repository files
     - name: Generate repository files
