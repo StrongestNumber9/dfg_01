@@ -23,7 +23,7 @@ runs:
       shell: bash
     # Download artifact(s)
     - name: Download release
-      run: gh release download --repo "${{ inputs.to_path }}" --pattern "*.rpm" --dir "${{ runner.temp }}/workdir/${{ inputs.version }}" "${{ inputs.version }}"
+      run: gh release download --repo "${{ inputs.repository }}" --pattern "*.rpm" --dir "${{ runner.temp }}/workdir/${{ inputs.version }}" "${{ inputs.version }}"
       shell: bash
       env:
         GH_TOKEN: ${{ github.token }}
