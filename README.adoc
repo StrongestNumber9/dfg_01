@@ -1,6 +1,6 @@
 = DFG_01 (DNF-Repo For GitHub)
 
-A simple to use GitHub Action that creates and updates `dnf` compatible repository configuration commits them to a specific branch.
+A simple to use GitHub Action that creates and updates `dnf` compatible repository configuration and commits them to a specific branch.
 
 == Features
 
@@ -8,9 +8,22 @@ A simple to use GitHub Action that creates and updates `dnf` compatible reposito
 
 - Combines, commits and updates a special `releases` repository configuration files that is made from all of the other per-version repositories. This allows user to use a single `.repo` definition to upgrade and downgrade versions as wanted.
 
+== Limitations
+
+Pushing to only the current repository is supported.
+
 == Usage
 
-Add a new step with `uses: teragrep/dfg_01@main` to your workflow.
+The workflow needs to have `contents: write` https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#permissions[permissions].
+
+.Required permissions
+[source,yaml]
+----
+permissions:
+  contents: write
+----
+
+Add a `uses: teragrep/dfg_01@main` https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsuses[step] to your workflow.
 
 .Minimal configuration
 [source,yaml]
