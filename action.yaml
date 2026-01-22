@@ -1,0 +1,92 @@
+name: DNF-Repo For GitHub
+description: 'Create a dnf-compatible repository from GitHub release'
+inputs:
+  # Descriptions for these input variables can be found in `README.adoc`
+  repository:
+    required: true
+    type: string
+  version:
+    required: true
+    type: string
+  to_branch:
+    default: 'gh-pages'
+    type: string
+  to_path:
+    default: 'repo'
+    type: string
+runs:
+  using: composite
+  steps:
+    # Create deployment directories
+    - name: Prepare repository deployment dirs
+      run: mkdir -p "${{ runner.temp }}/deployment/${{ inputs.to_path }}/${{ inputs.version }}"
+      shell: bash
+    # Download artifact(s)
+    - name: Download release
+      run: gh release download --repo "${{ inputs.to_path }}" --pattern "*.rpm" --dir "${{ runner.temp }}/workdir/${{ inputs.version }}" "${{ inputs.version }}"
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+    # Install dependencies
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get --yes install createrepo-c
+      shell: bash
+    # Normalize the repository name for use in .repo files
+    - name: Normalize repository information
+      run: printf "NORMALIZED_REPOSITORY=%q\n" "$(sed 's,/,-,g' <<< '${{ inputs.to_path }}')" >> $GITHUB_ENV
+      shell: bash
+    # Generate repository files
+    - name: Generate repository files
+      run: createrepo_c --no-database --baseurl=https://www.github.com --location-prefix="https://github.com/${{ inputs.repository }}/releases/download/" --outputdir="${{ runner.temp }}/deployment/${{ inputs.to_path }}/${{ inputs.version }}" workdir/
+      working-directory: "${{ runner.temp }}"
+      shell: bash
+    # Create repofile
+    - name: Create .repo file
+      run: |
+        echo '[${{ env.NORMALIZED_REPOSITORY }}-${{ inputs.version }}]
+        name=${{ env.NORMALIZED_REPOSITORY }}-${{ inputs.version }}
+        baseurl=https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/${{ inputs.to_branch }}/${{ inputs.to_path }}/${{ inputs.version }}
+        gpgcheck=0
+        enabled=1' > "${{ runner.temp }}/deployment/${{ inputs.to_path }}/${{ inputs.version }}/${{ env.NORMALIZED_REPOSITORY }}-${{ inputs.version }}.repo"
+      shell: bash
+    # Deploy current repository
+    - name: Deploy base repository files
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: "${{ runner.temp }}/deployment/${{ inputs.to_path }}/${{ inputs.version }}"
+        target-folder: "${{ inputs.to_path }}/${{ inputs.version }}"
+        branch: "${{ inputs.to_branch }}"
+        token: ${{ secrets.GITHUB_TOKEN }}
+    # Checkout deployment branch for merging repos
+    - name: Fetch deployment branch
+      id: checkout
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 1
+        repository: ${{ github.repository }}
+        ref: ${{ inputs.to_branch }}
+        sparse-checkout: |
+          ${{ inputs.to_path }}/
+        path: mergerepo
+    # Merge repos
+    - name: Merge repositories
+      run: mergerepo_c --all --no-database $(find "${{ inputs.to_path }}/" -maxdepth 1 -type d -not -name releases -not -name "${{ inputs.to_path }}" -printf "--repo=%p ") --outputdir "${{ inputs.to_path }}/releases"
+      working-directory: mergerepo
+      shell: bash
+    # Create repofile
+    - name: Create .repo file
+      run: |
+        echo '[${{ env.NORMALIZED_REPOSITORY }}-releases]
+        name=${{ env.NORMALIZED_REPOSITORY }}-releases
+        baseurl=https://raw.githubusercontent.com/${{ github.repository }}/refs/heads/${{ inputs.to_branch }}/${{ inputs.to_path }}/releases
+        gpgcheck=0
+        enabled=1' > "mergerepo/${{ inputs.to_path }}/releases/${{ env.NORMALIZED_REPOSITORY }}-releases.repo"
+      shell: bash
+    # Deploy releases repository
+    - name: Deploy releases repository files
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: "mergerepo/${{ inputs.to_path }}/releases"
+        target-folder: "${{ inputs.to_path }}/releases"
+        branch: "${{ inputs.to_branch }}"
+        token: ${{ secrets.GITHUB_TOKEN }}

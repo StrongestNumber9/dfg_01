@@ -1,47 +1,62 @@
-// Before publishing your new repository:
-// 1. Write the readme file
-// 2. Update the issues link in Contributing section in the readme file
-// 3. Update the discussion link in config.yml file in .github/ISSUE_TEMPLATE directory
+= DFG_01 (DNF-Repo For GitHub)
 
-= repo-template
-
-// Add a short description of your project. Tell what your project does and what it's used for.
-
-This is a template repository for Teragrep organization.
+A simple to use GitHub Action that creates and updates `dnf` compatible repository configuration commits them to a specific branch.
 
 == Features
 
-// List your project's features
+- Creates and commits per-version repository configuration files from any GitHub release that contains `.rpm` files. This allows user to use a specific per-version `.repo` definition to install exactly the wanted version without having to specify it during install process.
+
+- Combines, commits and updates a special `releases` repository configuration files that is made from all of the other per-version repositories. This allows user to use a single `.repo` definition to upgrade and downgrade versions as wanted.
+
+== Usage
+
+Add a new step with `uses: teragrep/dfg_01@main` to your workflow.
+
+.Minimal configuration
+[source,yaml]
+----
+- name: Create repo
+  uses: teragrep/dfg_01@main
+  with:
+    repository: teragrep/example-repository
+    version: 1.0.0
+----
+
+.Full configuration
+[source,yaml]
+----
+- name: Create repo
+  uses: teragrep/dfg_01@main
+  with:
+    repository: teragrep/example-repository
+    version: 1.0.0
+    to_branch: custom-branch
+    to_path: custom/path
+----
 
 == Documentation
 
-See the official documentation on https://docs.teragrep.com[docs.teragrep.com].
+These are arguments to be used in `with:` block.
 
-== Limitations
+|===
+|Input argument|Description|Required|Default
 
-// If your project has limitations, please list them. Otherwise remove this section.
+|`repository`
+|The used GitHub repository in `user/repository` format
+|Yes
+|
 
-== How to [compile/use/implement]
+|`version`
+|The exact release version.
+|Yes
+|
 
-// add instructions how people can start to use your project
+|`to_branch`
+|The branch where repository files are commited to
+|No
+|`gh-pages`
 
-== Contributing
-
-// Change the repository name in the issues link to match with your project's name
-
-You can involve yourself with our project by https://github.com/teragrep/repo-template/issues/new/choose[opening an issue] or submitting a pull request.
-
-Contribution requirements:
-
-. *All changes must be accompanied by a new or changed test.* If you think testing is not required in your pull request, include a sufficient explanation as why you think so.
-. Security checks must pass
-. Pull requests must align with the principles and http://www.extremeprogramming.org/values.html[values] of extreme programming.
-. Pull requests must follow the principles of Object Thinking and Elegant Objects (EO).
-
-Read more in our https://github.com/teragrep/teragrep/blob/main/contributing.adoc[Contributing Guideline].
-
-=== Contributor License Agreement
-
-Contributors must sign https://github.com/teragrep/teragrep/blob/main/cla.adoc[Teragrep Contributor License Agreement] before a pull request is accepted to organization's repositories.
-
-You need to submit the CLA only once. After submitting the CLA you can contribute to all Teragrep's repositories.
+|`to_path`
+|The path where repository files are commited to. No trailing slash required.
+|No
+|`repo`
