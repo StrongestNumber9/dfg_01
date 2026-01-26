@@ -22,7 +22,7 @@ inputs:
   to_path_central:
     default: 'central'
     type: string
-runs:
+jobs:
   deploy_repo:
     runs-on: ubuntu-latest
     permissions:

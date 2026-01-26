@@ -19,7 +19,7 @@ inputs:
   to_path_component:
     default: 'component'
     type: string
-runs:
+jobs:
   deploy_repo:
     runs-on: ubuntu-latest
     permissions:
