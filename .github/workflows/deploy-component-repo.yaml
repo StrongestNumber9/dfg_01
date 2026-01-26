@@ -1,26 +1,27 @@
 name: DNF-Repo For GitHub - Deploy component repo
 description: 'Create a dnf-compatible repository from GitHub release'
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      from_repository:
+        required: true
+        type: string
+      from_version:
+        required: true
+        type: string
+      to_repository:
+        required: true
+        type: string
+      to_branch:
+        default: 'gh-pages'
+        type: string
+      to_path_component:
+        default: 'component'
+        type: string
 
-inputs:
-  from_repository:
-    required: true
-    type: string
-  from_version:
-    required: true
-    type: string
-  to_repository:
-    required: true
-    type: string
-  to_branch:
-    default: 'gh-pages'
-    type: string
-  to_path_component:
-    default: 'component'
-    type: string
 jobs:
-  deploy_repo:
+  deploy_component_repo:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -28,9 +29,10 @@ jobs:
       # Checkout the target repository
       - name: Check out target repository
         uses: actions/checkout@v6
-        persist-credentials: false
-        repository: "${{ inputs.to_repository }}"
-        sparse-checkout: '${{ inputs.to_path_component }}'
+        with:
+          persist-credentials: false
+          repository: "${{ inputs.to_repository }}"
+          sparse-checkout: '${{ inputs.to_path_component }}'
       # Download artifact(s)
       - name: Download release
         run: gh release download --repo "teragrep/${{ inputs.from_repository }}" --pattern "*.rpm" --dir "${{ runner.temp }}/workdir/${{ inputs.from_version }}" "${{ inputs.from_version }}"
