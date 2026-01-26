@@ -48,7 +48,7 @@ jobs:
       - name: Create .repo file
         run: |
           echo '[teragrep-${{ inputs.from_repository }}-${{ inputs.from_version }}]
-          name=teragrep-${{ inptus.from_repository }}-${{ inputs.from_version }}
+          name=teragrep-${{ inputs.from_repository }}-${{ inputs.from_version }}
           baseurl=https://raw.githubusercontent.com/${{ inputs.to_repository }}/refs/heads/${{ inputs.to_branch }}/${{ inputs.to_path_component }}/${{ inputs.from_repository }}/${{ inputs.from_version }}
           gpgcheck=0
           enabled=1' > "${{ inputs.to_path_component }}/${{ inputs.from_version }}/${{ env.from_repository }}-${{ inputs.from_version }}.repo"
