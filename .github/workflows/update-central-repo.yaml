@@ -19,7 +19,7 @@ inputs:
   to_path_component:
     default: 'component'
     type: string
- to_path_central:
+  to_path_central:
     default: 'central'
     type: string
 runs:
