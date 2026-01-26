@@ -1,0 +1,59 @@
+name: DNF-Repo For GitHub - Deploy component repo
+description: 'Create a dnf-compatible repository from GitHub release'
+
+on: workflow_dispatch
+
+inputs:
+  from_repository:
+    required: true
+    type: string
+  from_version:
+    required: true
+    type: string
+  to_repository:
+    required: true
+    type: string
+  to_branch:
+    default: 'gh-pages'
+    type: string
+  to_path_component:
+    default: 'component'
+    type: string
+ to_path_central:
+    default: 'central'
+    type: string
+runs:
+  deploy_repo:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # Checkout the target repository
+      - name: Check out target repository
+        uses: actions/checkout@v6
+        persist-credentials: false
+        repository: "${{ inputs.to_repository }}"
+        sparse-checkout: '${{ inputs.to_path_central }}'
+      # Install dependencies
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get --yes install createrepo-c
+      # Merge repository files
+      - name: Merge repositories
+        run: mergerepo_c --all --no-database $(find "${{ inputs.to_path_component }}/" -maxdepth 1 -type d -not -name "${{ inputs.to_path_component }}" -printf "--repo=%p ") --outputdir "${{ inputs.to_path_central }}/releases"
+      # Create repofile
+      - name: Create .repo file
+        run: |
+          echo '[teragrep-central-releases]
+          name=teragrep-central-releases
+          baseurl=https://raw.githubusercontent.com/${{ inputs.to_repository }}/refs/heads/${{ inputs.to_branch }}/${{ inputs.to_path_central }}/releases
+          gpgcheck=0
+          enabled=1' > ${{ inputs.to_path_central }}/releases/teragrep-central-releases.repo"
+      # Deploy releases repository
+      - name: Deploy releases repository files
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: "${{ inputs.to_path_central }}/releases"
+          target-folder: "${{ inputs.to_path_central }}/releases"
+          branch: "${{ inputs.to_branch }}"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository-name: "${{ inputs.to_repository }}"

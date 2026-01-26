@@ -1,0 +1,61 @@
+name: DNF-Repo For GitHub - Deploy component repo
+description: 'Create a dnf-compatible repository from GitHub release'
+
+on: workflow_dispatch
+
+inputs:
+  from_repository:
+    required: true
+    type: string
+  from_version:
+    required: true
+    type: string
+  to_repository:
+    required: true
+    type: string
+  to_branch:
+    default: 'gh-pages'
+    type: string
+  to_path_component:
+    default: 'component'
+    type: string
+runs:
+  deploy_repo:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # Checkout the target repository
+      - name: Check out target repository
+        uses: actions/checkout@v6
+        persist-credentials: false
+        repository: "${{ inputs.to_repository }}"
+        sparse-checkout: '${{ inputs.to_path_component }}'
+      # Download artifact(s)
+      - name: Download release
+        run: gh release download --repo "teragrep/${{ inputs.from_repository }}" --pattern "*.rpm" --dir "${{ runner.temp }}/workdir/${{ inputs.from_version }}" "${{ inputs.from_version }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
+      # Install dependencies
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get --yes install createrepo-c
+      # Generate repository files
+      - name: Generate repository files
+        run: createrepo_c --no-database --baseurl=https://www.github.com --location-prefix="https://github.com/teragrep/${{ inputs.from_repository }}/releases/download/" --outputdir="${{ inputs.to_path_component }}/${{ inputs.from_version }}" workdir/
+      # Create repofile
+      - name: Create .repo file
+        run: |
+          echo '[teragrep-${{ inputs.from_repository }}-${{ inputs.from_version }}]
+          name=teragrep-${{ inptus.from_repository }}-${{ inputs.from_version }}
+          baseurl=https://raw.githubusercontent.com/${{ inputs.to_repository }}/refs/heads/${{ inputs.to_branch }}/${{ inputs.to_path_component }}/${{ inputs.from_repository }}/${{ inputs.from_version }}
+          gpgcheck=0
+          enabled=1' > "${{ inputs.to_path_component }}/${{ inputs.from_version }}/${{ env.from_repository }}-${{ inputs.from_version }}.repo"
+      # Deploy current repository
+      - name: Deploy base repository files
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: "${{ inputs.to_path_component }}/${{ inputs.from_version }}"
+          target-folder: "${{ inputs.to_path_component }}/${{ inputs.from_repository }}/${{ inputs.from_version }}"
+          branch: "${{ inputs.to_branch }}"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository-name: "${{ inputs.to_repository }}"
