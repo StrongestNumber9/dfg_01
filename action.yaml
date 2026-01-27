@@ -41,8 +41,6 @@ runs:
       run: |
         gh workflow run update-central-repo.yaml \
         --repo "${{ github.repository }}" \
-        --raw-field "from_repository=${{ inputs.from_repository }}" \
-        --raw-field "from_version=${{ inputs.from_version }}" \
         --raw-field "to_repository=${{ inputs.to_repository }}" \
         --raw-field "to_branch=${{ inputs.to_branch }}" \
         --raw-field "to_path_component=${{ inputs.to_path_component }}" \

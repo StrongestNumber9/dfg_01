@@ -4,12 +4,6 @@ description: 'Update central dnf-compatible repository'
 on:
   workflow_dispatch:
     inputs:
-      from_repository:
-        required: true
-        type: string
-      from_version:
-        required: true
-        type: string
       to_repository:
         required: true
         type: string
