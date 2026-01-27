@@ -20,9 +20,6 @@ inputs:
   to_path_central:
     default: 'central'
     type: string
-  token:
-    required: true
-    type: string
 runs:
   using: composite
   steps:
