@@ -23,6 +23,16 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: debug
+      run: |
+        echo ${{ github.action_repository }};
+        echo ${{ env.test }};
+        echo ${{ env.test2 }};
+      env:
+        test: ${{ toJson(github.action_repository) }}
+        test2: ${{ github.action_repository }}
+      shell: bash
+        
     - name: Deploy component repo
       run: |
         gh workflow run deploy-component-repo.yaml \
