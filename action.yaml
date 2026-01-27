@@ -28,7 +28,7 @@ runs:
   steps:
     - name: Deploy component repo
       run: |
-        echo gh workflow run deploy-component-repo.yaml \
+        gh workflow run deploy-component-repo.yaml \
         --repo "${ACTION_REPOSITORY}" \
         --ref "${ACTION_REF}" \
         --raw-field "from_repository=${{ inputs.from_repository }}" \
