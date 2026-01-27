@@ -26,21 +26,11 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: actions/checkout@v6
-      with:
-        repository: StrongestNumber9/dfg_01
-        ref: initial_release
-
-    - name: Debug
-      run: |
-        gh workflow list --all
-      env:
-        GH_TOKEN: ${{ inputs.token }}
-      shell: bash
-
     - name: Deploy component repo
       run: |
-        gh workflow run deploy-repo \
+        gh workflow run deploy-component-repo.yaml \
+        --repo "${ACTION_REPOSITORY}" \
+        --ref "${ACTION_REF}" \
         --raw-field "from_repository=${{ inputs.from_repository }}" \
         --raw-field "from_version=${{ inputs.from_version }}" \
         --raw-field "to_repository=${{ inputs.to_repository }}" \
@@ -49,6 +39,8 @@ runs:
         printf "DEPLOY_RUNID=%q\n" "$(gh run list --workflow=deploy-component-repo.yaml --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
       env:
         GH_TOKEN: ${{ inputs.token }}
+        ACTION_REPOSITORY: ${{ github.action_repository }}
+        ACTION_REF: ${{ github.action_ref }}
       shell: bash
     - name: Retry deploy component repo until finished
       run: while ! gh run watch "${{ env.DEPLOY_RUNID }}" --exit-status; do gh run rerun "${{ env.DEPLOY_RUNID }}"; done;
