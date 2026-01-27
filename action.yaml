@@ -31,6 +31,7 @@ runs:
         repository: ${{ github.action_repository }}
         ref: ${{ github.action_ref }}
         persist-credentials: false
+        path: ${{ runner.temp }}/repo
     - name: Deploy component repo
       run: |
         gh workflow run deploy-component-repo.yaml \
@@ -41,7 +42,7 @@ runs:
         --raw-field "to_repository=${{ inputs.to_repository }}" \
         --raw-field "to_branch=${{ inputs.to_branch }}" \
         --raw-field "to_path_component=${{ inputs.to_path_component }}";
-        printf "DEPLOY_RUNID=%q\n" "$(gh run list --workflow=deploy-component-repo.yaml --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
+        cd ${{ runner.temp }}/repo && printf "DEPLOY_RUNID=%q\n" "$(gh run list --workflow=deploy-component-repo.yaml --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
       env:
         GH_TOKEN: ${{ inputs.token }}
         ACTION_REPOSITORY: ${{ github.action_repository }}
