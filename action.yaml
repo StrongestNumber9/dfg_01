@@ -26,6 +26,11 @@ inputs:
 runs:
   using: composite
   steps:
+    - uses: actions/checkout@v6
+      with:
+        repository: ${{ github.action_repository }}
+        ref: ${{ github.action_ref }}
+        persist-credentials: false
     - name: Deploy component repo
       run: |
         gh workflow run deploy-component-repo.yaml \
