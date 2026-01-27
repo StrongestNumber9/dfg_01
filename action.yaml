@@ -28,8 +28,8 @@ runs:
   steps:
     - uses: actions/checkout@v6
       with:
-        repository: ${{ github.action_repository }}
-        ref: ${{ github.action_ref }}
+        repository: StrongestNumber9/dfg_01
+        ref: initial_release
         persist-credentials: false
 
     - name: Debug
