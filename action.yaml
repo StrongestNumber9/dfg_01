@@ -36,7 +36,7 @@ runs:
         --raw-field "to_repository=${{ inputs.to_repository }}" \
         --raw-field "to_branch=${{ inputs.to_branch }}" \
         --raw-field "to_path_component=${{ inputs.to_path_component }}";
-        printf "DEPLOY_RUNID=%q\n" "$(gh run list --workflow=deploy-component-repo.yaml --repo "${ACTION_REPOSITORY}" --ref "${ACTION_REF}" --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
+        printf "DEPLOY_RUNID=%q\n" "$(gh run list --workflow=deploy-component-repo.yaml --repo "${ACTION_REPOSITORY}" --branch "${ACTION_REF}" --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
       env:
         GH_TOKEN: ${{ inputs.token }}
         ACTION_REPOSITORY: ${{ github.action_repository }}
