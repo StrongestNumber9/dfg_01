@@ -23,20 +23,10 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Dump github context
-      run:   echo "$GITHUB_CONTEXT"
-      shell: bash
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-    - name: Dump github context
-      run:   echo "$GITHUB_CONTEXT"
-      shell: bash
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github.action_repository) }}
     - name: Deploy component repo
       run: |
         gh workflow run deploy-component-repo.yaml \
-        --repo "${{ github.action_repository }}" \
+        --repo "${ACTION_REPOSITORY}" \
         --raw-field "from_repository=${{ inputs.from_repository }}" \
         --raw-field "from_version=${{ inputs.from_version }}" \
         --raw-field "to_repository=${{ inputs.to_repository }}" \
@@ -45,6 +35,7 @@ runs:
         printf "DEPLOY_RUNID=%q\n" "$(gh run list --workflow=deploy-component-repo.yaml --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
       env:
         GH_TOKEN: ${{ github.token }}
+        ACTION_REPOSITORY: ${{ toJson(github.action_repository) }}
       shell: bash
     - name: Retry deploy component repo until finished
       run: while ! gh run watch "${{ env.DEPLOY_RUNID }}" --exit-status; do gh run rerun "${{ env.DEPLOY_RUNID }}"; done;
@@ -54,7 +45,7 @@ runs:
     - name: Update central repo
       run: |
         gh workflow run update-central-repo.yaml \
-        --repo "${{ github.action_repository }}" \
+        --repo "${ACTION_REPOSITORY}" \
         --raw-field "to_repository=${{ inputs.to_repository }}" \
         --raw-field "to_branch=${{ inputs.to_branch }}" \
         --raw-field "to_path_component=${{ inputs.to_path_component }}" \
@@ -62,6 +53,7 @@ runs:
         ; printf UPDATE_RUNID=%q\n" "$(gh run list --workflow=update-central-repo.yaml --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
       env:
         GH_TOKEN: ${{ github.token }}
+        ACTION_REPOSITORY: ${{ toJson(github.action_repository) }}
       shell: bash
     - name: Retry update central repo
       run: while ! gh run watch "${{ env.UPDATE_RUNID }}" --exit-status; do gh run rerun "${{ env.UPDATE_RUNID }}"; done;
