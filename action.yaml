@@ -30,7 +30,6 @@ runs:
       with:
         repository: StrongestNumber9/dfg_01
         ref: initial_release
-        persist-credentials: false
 
     - name: Debug
       run: |
