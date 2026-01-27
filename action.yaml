@@ -32,8 +32,6 @@ runs:
     - name: Debug
       run: |
         gh workflow list --all
-      env:
-        GH_TOKEN: ${{ inputs.token }}
       shell: bash
 
     - name: Deploy component repo
