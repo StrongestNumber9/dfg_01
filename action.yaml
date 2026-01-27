@@ -28,6 +28,7 @@ runs:
         gh workflow list --all
       env:
         GH_TOKEN: ${{ inputs.token }}
+      shell: bash
 
     - name: Deploy component repo
       run: |
