@@ -26,6 +26,15 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Test
+      uses: StrongestNumber9/dfg_01/.github/workflows/deploy-component-repo.yaml@initial_release
+      with:
+        from_repository: "${{ inputs.from_repository }}"
+        from_version: "${{ inputs.from_version }}"
+        to_repository: "${{ inputs.to_repository }}"
+        to_branch: "${{ inputs.to_branch }}"
+        to_path_component: "${{ inputs.to_path_component }}"
+        token: "${{ inputs.token }}"
     - name: Deploy component repo
       run: |
         gh workflow run deploy-component-repo.yaml \
