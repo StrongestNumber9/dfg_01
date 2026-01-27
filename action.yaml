@@ -40,7 +40,7 @@ runs:
 
     - name: Deploy component repo
       run: |
-        gh workflow run deploy-component-repo.yaml \
+        gh workflow run deploy-repo \
         --raw-field "from_repository=${{ inputs.from_repository }}" \
         --raw-field "from_version=${{ inputs.from_version }}" \
         --raw-field "to_repository=${{ inputs.to_repository }}" \
