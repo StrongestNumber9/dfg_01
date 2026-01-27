@@ -27,6 +27,7 @@ runs:
       run: |
         gh workflow run deploy-component-repo.yaml \
         --repo "${ACTION_REPOSITORY}" \
+        --ref "${ACTION_REF}" \
         --raw-field "from_repository=${{ inputs.from_repository }}" \
         --raw-field "from_version=${{ inputs.from_version }}" \
         --raw-field "to_repository=${{ inputs.to_repository }}" \
@@ -36,6 +37,7 @@ runs:
       env:
         GH_TOKEN: ${{ github.token }}
         ACTION_REPOSITORY: ${{ github.action_repository }}
+        ACTION_REF: ${{ github.action_ref }}
       shell: bash
     - name: Retry deploy component repo until finished
       run: while ! gh run watch "${{ env.DEPLOY_RUNID }}" --exit-status; do gh run rerun "${{ env.DEPLOY_RUNID }}"; done;
@@ -46,6 +48,7 @@ runs:
       run: |
         gh workflow run update-central-repo.yaml \
         --repo "${ACTION_REPOSITORY}" \
+        --ref "${ACTION_REF}" \
         --raw-field "to_repository=${{ inputs.to_repository }}" \
         --raw-field "to_branch=${{ inputs.to_branch }}" \
         --raw-field "to_path_component=${{ inputs.to_path_component }}" \
@@ -54,6 +57,7 @@ runs:
       env:
         GH_TOKEN: ${{ github.token }}
         ACTION_REPOSITORY: ${{ github.action_repository }}
+        ACTION_REF: ${{ github.action_ref }}
       shell: bash
     - name: Retry update central repo
       run: while ! gh run watch "${{ env.UPDATE_RUNID }}" --exit-status; do gh run rerun "${{ env.UPDATE_RUNID }}"; done;
