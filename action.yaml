@@ -24,7 +24,7 @@ runs:
   using: composite
   steps:
     - name: DEBUG
-      run: echo "${{ github.event.inputs }}"; echo "${{ github.event.inputs.jsonParameterInputs }}";
+      run: echo "${{ inputs.from_repository }} ${{ inputs.from_version }}"; echo "${{ github.event.inputs.jsonParameterInputs }}";
       shell: bash
     - name: Deploy component repo
       run: echo "${{ fromJSON(inputs) }}" | gh workflow run deploy-component-repo.yaml --repo "${{ github.repository }}"; printf "DEPLOY_RUNID=%q\n" "$(gh run list --workflow=deploy-component-repo.yaml --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
