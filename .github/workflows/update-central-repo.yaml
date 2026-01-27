@@ -1,4 +1,4 @@
-name: DNF-Repo For GitHub - Update central repo
+name: update-repo
 description: 'Update central dnf-compatible repository'
 
 on:

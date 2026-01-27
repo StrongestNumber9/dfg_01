@@ -1,4 +1,4 @@
-name: DNF-Repo For GitHub - Deploy component repo
+name: deploy-repo
 description: 'Create a dnf-compatible repository from GitHub release'
 
 on:
