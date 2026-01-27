@@ -23,6 +23,12 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Debug
+      run: |
+        gh workflow list --all
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+
     - name: Deploy component repo
       run: |
         gh workflow run deploy-component-repo.yaml \
