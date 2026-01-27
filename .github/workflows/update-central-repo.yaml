@@ -20,8 +20,7 @@ on:
 jobs:
   update_central_repo:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    permissions: write-all
     steps:
       # Checkout the target repository
       - name: Check out target repository
