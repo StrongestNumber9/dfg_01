@@ -24,6 +24,11 @@ runs:
   using: composite
   steps:
     - uses: actions/checkout@v6
+      with:
+        repository: ${{ github.action_repository }}
+        token: ${{ inputs.token }}
+        ref: ${{ github.action_ref }}
+        persist-credentials: false
 
     - name: Debug
       run: |
