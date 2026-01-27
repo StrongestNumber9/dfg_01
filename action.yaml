@@ -42,7 +42,6 @@ runs:
     - name: Deploy component repo
       run: |
         gh workflow run deploy-component-repo.yaml \
-        --ref initial_release \
         --raw-field "from_repository=${{ inputs.from_repository }}" \
         --raw-field "from_version=${{ inputs.from_version }}" \
         --raw-field "to_repository=${{ inputs.to_repository }}" \
@@ -51,8 +50,6 @@ runs:
         printf "DEPLOY_RUNID=%q\n" "$(gh run list --workflow=deploy-component-repo.yaml --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
       env:
         GH_TOKEN: ${{ inputs.token }}
-        ACTION_REPOSITORY: ${{ github.action_repository }}
-        ACTION_REF: ${{ github.action_ref }}
       shell: bash
     - name: Retry deploy component repo until finished
       run: while ! gh run watch "${{ env.DEPLOY_RUNID }}" --exit-status; do gh run rerun "${{ env.DEPLOY_RUNID }}"; done;
@@ -70,8 +67,6 @@ runs:
         ; printf UPDATE_RUNID=%q\n" "$(gh run list --workflow=update-central-repo.yaml --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
       env:
         GH_TOKEN: ${{ inputs.token }}
-        ACTION_REPOSITORY: ${{ github.action_repository }}
-        ACTION_REF: ${{ github.action_ref }}
       shell: bash
     - name: Retry update central repo
       run: while ! gh run watch "${{ env.UPDATE_RUNID }}" --exit-status; do gh run rerun "${{ env.UPDATE_RUNID }}"; done;
