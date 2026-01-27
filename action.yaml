@@ -23,16 +23,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: debug
-      run: |
-        echo ${{ github.action_repository }};
-        echo ${{ env.test }};
-        echo ${{ env.test2 }};
-      env:
-        test: ${{ toJson(github.action_repository) }}
-        test2: ${{ github.action_repository }}
-      shell: bash
-        
     - name: Deploy component repo
       run: |
         gh workflow run deploy-component-repo.yaml \
@@ -45,7 +35,7 @@ runs:
         printf "DEPLOY_RUNID=%q\n" "$(gh run list --workflow=deploy-component-repo.yaml --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
       env:
         GH_TOKEN: ${{ github.token }}
-        ACTION_REPOSITORY: ${{ toJson(github.action_repository) }}
+        ACTION_REPOSITORY: ${{ github.action_repository }}
       shell: bash
     - name: Retry deploy component repo until finished
       run: while ! gh run watch "${{ env.DEPLOY_RUNID }}" --exit-status; do gh run rerun "${{ env.DEPLOY_RUNID }}"; done;
@@ -63,7 +53,7 @@ runs:
         ; printf UPDATE_RUNID=%q\n" "$(gh run list --workflow=update-central-repo.yaml --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
       env:
         GH_TOKEN: ${{ github.token }}
-        ACTION_REPOSITORY: ${{ toJson(github.action_repository) }}
+        ACTION_REPOSITORY: ${{ github.action_repository }}
       shell: bash
     - name: Retry update central repo
       run: while ! gh run watch "${{ env.UPDATE_RUNID }}" --exit-status; do gh run rerun "${{ env.UPDATE_RUNID }}"; done;
