@@ -25,6 +25,7 @@ on:
 
 jobs:
   deploy_component_repo:
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       # Checkout the target repository
