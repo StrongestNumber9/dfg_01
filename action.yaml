@@ -23,17 +23,31 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: DEBUG
-      run: echo "${{ inputs.from_repository }} ${{ inputs.from_version }}"; echo "${{ github.event.inputs.jsonParameterInputs }}";
-      shell: bash
     - name: Deploy component repo
-      run: echo "${{ fromJSON(inputs) }}" | gh workflow run deploy-component-repo.yaml --repo "${{ github.repository }}"; printf "DEPLOY_RUNID=%q\n" "$(gh run list --workflow=deploy-component-repo.yaml --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
+      run: |
+        gh workflow run deploy-component-repo.yaml \
+        --repo "${{ github.repository }}" \
+        --raw-field "from_repository=${{ inputs.from_repository }}" \
+        --raw-field "from_version=${{ inputs.from_version }}" \
+        --raw-field "to_repository=${{ inputs.to_repository }}" \
+        --raw-field "to_branch=${{ inputs.to_branch }}" \
+        --raw-field "to_path_component=${{ inputs.to_path_component }}";
+        printf "DEPLOY_RUNID=%q\n" "$(gh run list --workflow=deploy-component-repo.yaml --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
       shell: bash
     - name: Retry deploy component repo until finished
       run: while ! gh run watch "${{ env.DEPLOY_RUNID }}" --exit-status; do gh run rerun "${{ env.DEPLOY_RUNID }}"; done;
       shell: bash
     - name: Update central repo
-      run: echo "${{ fromJSON(inputs) }}" | gh workflow run update-central-repo.yaml --repo "${{ github.repository }}"; printf UPDATE_RUNID=%q\n" "$(gh run list --workflow=update-central-repo.yaml --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
+      run: |
+        gh workflow run update-central-repo.yaml \
+        --repo "${{ github.repository }}" \
+        --raw-field "from_repository=${{ inputs.from_repository }}" \
+        --raw-field "from_version=${{ inputs.from_version }}" \
+        --raw-field "to_repository=${{ inputs.to_repository }}" \
+        --raw-field "to_branch=${{ inputs.to_branch }}" \
+        --raw-field "to_path_component=${{ inputs.to_path_component }}" \
+        --raw-field "to_path_central=${{ inputs.to_path_central }}";
+        ; printf UPDATE_RUNID=%q\n" "$(gh run list --workflow=update-central-repo.yaml --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
       shell: bash
     - name: Retry update central repo
       run: while ! gh run watch "${{ env.UPDATE_RUNID }}" --exit-status; do gh run rerun "${{ env.UPDATE_RUNID }}"; done;
