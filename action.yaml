@@ -88,4 +88,5 @@ runs:
         if [[ "${retries}" == "${{ inputs.max_retries }}" ]]; then echo "Max retries encountered, failing"; exit 1; fi;
       env:
         GH_TOKEN: ${{ inputs.token }}
+        ACTION_REPOSITORY: ${{ github.action_repository }}
       shell: bash
