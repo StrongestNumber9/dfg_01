@@ -26,6 +26,8 @@ inputs:
   token:
     required: true
     type: string
+concurrency:
+  group: dfg_01
 runs:
   using: composite
   steps:
