@@ -40,6 +40,7 @@ runs:
         --raw-field "to_branch=${{ inputs.to_branch }}" \
         --raw-field "to_path_component=${{ inputs.to_path_component }}" \
         --raw-field "token=${{ inputs.token }}";
+        sleep 3;
         printf "DEPLOY_RUNID=%q\n" "$(gh run list --workflow=deploy-component-repo.yaml --repo "${ACTION_REPOSITORY}" --branch "${ACTION_REF}" --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
       env:
         GH_TOKEN: ${{ inputs.token }}
@@ -69,6 +70,7 @@ runs:
         --raw-field "to_path_component=${{ inputs.to_path_component }}" \
         --raw-field "to_path_central=${{ inputs.to_path_central }}" \
         --raw-field "token=${{ inputs.token }}";
+        sleep 3;
         printf "UPDATE_RUNID=%q\n" "$(gh run list --workflow=update-central-repo.yaml --repo "${ACTION_REPOSITORY}" --branch "${ACTION_REF}" --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
       env:
         GH_TOKEN: ${{ inputs.token }}
