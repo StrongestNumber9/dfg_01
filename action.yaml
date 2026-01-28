@@ -23,6 +23,9 @@ inputs:
   token:
     required: true
     type: string
+  max_retries:
+    default: 5
+    type: string
 runs:
   using: composite
   steps:
@@ -43,7 +46,7 @@ runs:
         ACTION_REF: ${{ github.action_ref }}
       shell: bash
     - name: Retry deploy component repo until finished
-      run: while ! gh run watch "${{ env.DEPLOY_RUNID }}" --repo "${ACTION_REPOSITORY}" --exit-status; do gh run rerun "${{ env.DEPLOY_RUNID }}" --repo "${ACTION_REPOSITORY}"; done;
+      run: export retries=0; while ! gh run watch "${{ env.DEPLOY_RUNID }}" --repo "${ACTION_REPOSITORY}" --exit-status && [[ "${retries}" -lt "${{ inputs.max_retries }}" ]]; do echo "Retry ${retries}/${{ inputs.max_retries }}"; gh run rerun "${{ env.DEPLOY_RUNID }}" --repo "${ACTION_REPOSITORY}"; export retries="$((retries+1))"; done;
       env:
         GH_TOKEN: ${{ inputs.token }}
         ACTION_REPOSITORY: ${{ github.action_repository }}
@@ -64,7 +67,7 @@ runs:
         ACTION_REF: ${{ github.action_ref }}
       shell: bash
     - name: Retry update central repo
-      run: while ! gh run watch "${{ env.UPDATE_RUNID }}" --repo "${ACTION_REPOSITORY}" --exit-status; do gh run rerun "${{ env.UPDATE_RUNID }}" --repo "${ACTION_REPOSITORY}"; done;
+      run: export retries=0; while ! gh run watch "${{ env.UPDATE_RUNID }}" --repo "${ACTION_REPOSITORY}" --exit-status && [[ "${retries}" -lt "${{ inputs.max_retries }}" ]]; do echo "Retry ${retries}/${{ inputs.max_retries }}";  gh run rerun "${{ env.UPDATE_RUNID }}" --repo "${ACTION_REPOSITORY}"; export retries="$((retries+1))"; done;
       env:
         GH_TOKEN: ${{ inputs.token }}
       shell: bash
