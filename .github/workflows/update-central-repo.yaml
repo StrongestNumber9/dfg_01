@@ -1,4 +1,4 @@
-name: update-repo
+name: update-repo-${{ inputs.from_repository }}-${{ inputs.from_version }}
 description: 'Update central dnf-compatible repository'
 
 on:
@@ -20,7 +20,7 @@ on:
         required: true
         type: string
 concurrency:
-  group: dfg_01
+  group: "dfg_01-${{ inputs.from_repository }}"
   cancel-in-progress: false
 jobs:
   update_central_repo:

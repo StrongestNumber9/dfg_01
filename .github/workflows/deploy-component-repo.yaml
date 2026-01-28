@@ -1,4 +1,4 @@
-name: deploy-repo
+name: deploy-repo-${{ inputs.from_repository }}-${{ inputs.from_version }}
 description: 'Create a dnf-compatible repository from GitHub release'
 
 on:
@@ -23,7 +23,7 @@ on:
         required: true
         type: string
 concurrency:
-  group: dfg_01
+  group: "dfg_01-${{ inputs.from_repository }}"
   cancel-in-progress: false
 jobs:
   deploy_component_repo:
