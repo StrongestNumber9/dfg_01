@@ -42,7 +42,7 @@ jobs:
           name=teragrep-central-releases
           baseurl=https://raw.githubusercontent.com/${{ inputs.to_repository }}/refs/heads/${{ inputs.to_branch }}/${{ inputs.to_path_central }}/releases
           gpgcheck=0
-          enabled=1' > ${{ runner.temp }}/releases/teragrep-central-releases.repo"
+          enabled=1' > "${{ runner.temp }}/releases/teragrep-central-releases.repo"
       # Deploy releases repository
       - name: Deploy releases repository files
         uses: JamesIves/github-pages-deploy-action@v4

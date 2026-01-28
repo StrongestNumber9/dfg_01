@@ -42,7 +42,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get --yes install createrepo-c
       # Generate repository files
       - name: Generate repository files
-        run: createrepo_c --no-database --baseurl=https://www.github.com --location-prefix="https://github.com/teragrep/${{ inputs.from_repository }}/releases/download/" --outputdir="${{ inputs.to_path_component }}/${{ inputs.from_version }}" "${{ runner.temp }}"
+        run: createrepo_c --no-database --baseurl=https://www.github.com --location-prefix="https://github.com/teragrep/${{ inputs.from_repository }}/releases/download/" --outputdir="${{ runner.temp }}/${{ inputs.from_version }}" "${{ runner.temp }}"
       # Create repofile
       - name: Create .repo file
         run: |
