@@ -30,7 +30,7 @@ jobs:
         with:
           persist-credentials: false
           repository: "${{ inputs.to_repository }}"
-          sparse-checkout: '${{ inputs.to_path_central }}'
+          ref: "${{ inputs.to_branch }}"
       # Install dependencies
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get --yes install createrepo-c

@@ -34,6 +34,7 @@ jobs:
           persist-credentials: false
           repository: "${{ inputs.to_repository }}"
           sparse-checkout: '${{ inputs.to_path_component }}'
+          ref: "${{ inputs.to_branch }}"
       # Download artifact(s)
       - name: Download release
         run: mkdir -p "${{ runner.temp }}/workdir" && gh release download --repo "teragrep/${{ inputs.from_repository }}" --pattern "*.rpm" --dir "${{ runner.temp }}/workdir/${{ inputs.from_version }}" "${{ inputs.from_version }}"
