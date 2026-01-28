@@ -36,7 +36,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get --yes install createrepo-c
       # Merge repository files
       - name: Merge repositories
-        run: mergerepo_c --all --no-database $(find "${{ inputs.to_path_component }}/" -maxdepth 1 -type d -not -name "${{ inputs.to_path_component }}" -printf "--repo=%p ") --outputdir "${{ runner.temp }}/releases"
+        run: mkdir -p "${{ runner.temp }}/releases" mergerepo_c --all --no-database $(find "${{ inputs.to_path_component }}/" -maxdepth 1 -type d -not -name "${{ inputs.to_path_component }}" -printf "--repo=%p ") --outputdir "${{ runner.temp }}/releases"
       # Create repofile
       - name: Create .repo file
         run: |
