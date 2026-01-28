@@ -53,19 +53,18 @@ runs:
         gh workflow run update-central-repo.yaml \
         --repo "${ACTION_REPOSITORY}" \
         --ref "${ACTION_REF}" \
-        --ref initial_release \
         --raw-field "to_repository=${{ inputs.to_repository }}" \
         --raw-field "to_branch=${{ inputs.to_branch }}" \
         --raw-field "to_path_component=${{ inputs.to_path_component }}" \
         --raw-field "to_path_central=${{ inputs.to_path_central }}";
-        cd deploy-workflows && printf UPDATE_RUNID=%q\n" "$(gh run list --workflow=update-central-repo.yaml --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
+        printf UPDATE_RUNID=%q\n" "$(gh run list --workflow=update-central-repo.yaml --repo "${ACTION_REPOSITORY}" --branch "${ACTION_REF}" --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
       env:
         GH_TOKEN: ${{ inputs.token }}
         ACTION_REPOSITORY: ${{ github.action_repository }}
         ACTION_REF: ${{ github.action_ref }}
       shell: bash
     - name: Retry update central repo
-      run: while ! gh run watch "${{ env.UPDATE_RUNID }}" --exit-status; do gh run rerun "${{ env.UPDATE_RUNID }}"; done;
+      run: while ! gh run watch "${{ env.UPDATE_RUNID }}" --repo "${ACTION_REPOSITORY}" --exit-status; do gh run rerun "${{ env.UPDATE_RUNID }}" --repo "${ACTION_REPOSITORY}"; done;
       env:
         GH_TOKEN: ${{ inputs.token }}
       shell: bash
