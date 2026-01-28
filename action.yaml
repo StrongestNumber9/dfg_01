@@ -54,7 +54,7 @@ runs:
         gh run rerun "${{ env.DEPLOY_RUNID }}" --repo "${ACTION_REPOSITORY}"; \
         export retries="$((retries+1))"; \
         done;
-        if [[ "${retries}" == "${{ inputs.max_retries }} " ]]; do echo "Max retries encountered, failing"; exit 1; fi;
+        if [[ "${retries}" == "${{ inputs.max_retries }}" ]]; then echo "Max retries encountered, failing"; exit 1; fi;
       env:
         GH_TOKEN: ${{ inputs.token }}
         ACTION_REPOSITORY: ${{ github.action_repository }}
@@ -83,7 +83,7 @@ runs:
         gh run rerun "${{ env.UPDATE_RUNID }}" --repo "${ACTION_REPOSITORY}"; \
         export retries="$((retries+1))"; \
         done;
-        if [[ "${retries}" == "${{ inputs.max_retries }} " ]]; do echo "Max retries encountered, failing"; exit 1; fi;
+        if [[ "${retries}" == "${{ inputs.max_retries }}" ]]; then echo "Max retries encountered, failing"; exit 1; fi;
       env:
         GH_TOKEN: ${{ inputs.token }}
       shell: bash
