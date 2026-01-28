@@ -1,4 +1,4 @@
-name: update-repo-${{ inputs.from_repository }}-${{ inputs.from_version }}
+name: update-repo
 description: 'Update central dnf-compatible repository'
 
 on:
@@ -19,9 +19,6 @@ on:
       token:
         required: true
         type: string
-concurrency:
-  group: "dfg_01-${{ inputs.from_repository }}"
-  cancel-in-progress: false
 jobs:
   update_central_repo:
     runs-on: ubuntu-latest
