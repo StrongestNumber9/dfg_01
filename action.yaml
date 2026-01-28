@@ -46,7 +46,14 @@ runs:
         ACTION_REF: ${{ github.action_ref }}
       shell: bash
     - name: Retry deploy component repo until finished
-      run: export retries=0; while ! gh run watch "${{ env.DEPLOY_RUNID }}" --repo "${ACTION_REPOSITORY}" --exit-status && [[ "${retries}" -lt "${{ inputs.max_retries }}" ]]; do echo "Retry ${retries}/${{ inputs.max_retries }}"; gh run rerun "${{ env.DEPLOY_RUNID }}" --repo "${ACTION_REPOSITORY}"; export retries="$((retries+1))"; done;
+      run: |
+        export retries=0;
+        while ! gh run watch "${{ env.DEPLOY_RUNID }}" --repo "${ACTION_REPOSITORY}" --exit-status && [[ "${retries}" -lt "${{ inputs.max_retries }}" ]]; do \
+        echo "Retry ${retries}/${{ inputs.max_retries }}"; \
+        gh run rerun "${{ env.DEPLOY_RUNID }}" --repo "${ACTION_REPOSITORY}"; \
+        export retries="$((retries+1))"; \
+        done;
+        if [[ "${retries}" == "${{ inputs.max_retries }} " ]]; do echo "Max retries encountered, failing"; exit 1; fi;
       env:
         GH_TOKEN: ${{ inputs.token }}
         ACTION_REPOSITORY: ${{ github.action_repository }}
@@ -60,14 +67,21 @@ runs:
         --raw-field "to_branch=${{ inputs.to_branch }}" \
         --raw-field "to_path_component=${{ inputs.to_path_component }}" \
         --raw-field "to_path_central=${{ inputs.to_path_central }}";
-        printf UPDATE_RUNID=%q\n" "$(gh run list --workflow=update-central-repo.yaml --repo "${ACTION_REPOSITORY}" --branch "${ACTION_REF}" --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
+        printf "UPDATE_RUNID=%q\n" "$(gh run list --workflow=update-central-repo.yaml --repo "${ACTION_REPOSITORY}" --branch "${ACTION_REF}" --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
       env:
         GH_TOKEN: ${{ inputs.token }}
         ACTION_REPOSITORY: ${{ github.action_repository }}
         ACTION_REF: ${{ github.action_ref }}
       shell: bash
     - name: Retry update central repo
-      run: export retries=0; while ! gh run watch "${{ env.UPDATE_RUNID }}" --repo "${ACTION_REPOSITORY}" --exit-status && [[ "${retries}" -lt "${{ inputs.max_retries }}" ]]; do echo "Retry ${retries}/${{ inputs.max_retries }}";  gh run rerun "${{ env.UPDATE_RUNID }}" --repo "${ACTION_REPOSITORY}"; export retries="$((retries+1))"; done;
+      run: |
+        export retries=0;
+        while ! gh run watch "${{ env.UPDATE_RUNID }}" --repo "${ACTION_REPOSITORY}" --exit-status && [[ "${retries}" -lt "${{ inputs.max_retries }}" ]]; do \
+        echo "Retry ${retries}/${{ inputs.max_retries }}"; \
+        gh run rerun "${{ env.UPDATE_RUNID }}" --repo "${ACTION_REPOSITORY}"; \
+        export retries="$((retries+1))"; \
+        done;
+        if [[ "${retries}" == "${{ inputs.max_retries }} " ]]; do echo "Max retries encountered, failing"; exit 1; fi;
       env:
         GH_TOKEN: ${{ inputs.token }}
       shell: bash
