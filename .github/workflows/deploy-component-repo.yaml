@@ -24,6 +24,7 @@ on:
         type: string
 concurrency:
   group: dfg_01
+  cancel-in-progress: false
 jobs:
   deploy_component_repo:
     runs-on: ubuntu-latest

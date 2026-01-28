@@ -21,6 +21,7 @@ on:
         type: string
 concurrency:
   group: dfg_01
+  cancel-in-progress: false
 jobs:
   update_central_repo:
     runs-on: ubuntu-latest
