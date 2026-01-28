@@ -34,7 +34,7 @@ jobs:
           sparse-checkout: '${{ inputs.to_path_component }}'
       # Download artifact(s)
       - name: Download release
-        run: gh release download --repo "teragrep/${{ inputs.from_repository }}" --pattern "*.rpm" --dir "${{ runner.temp }}/workdir/${{ inputs.from_version }}" "${{ inputs.from_version }}"
+        run: gh release download --repo "teragrep/${{ inputs.from_repository }}" --pattern "*.rpm" --dir "${{ runner.temp }}/${{ inputs.from_version }}" "${{ inputs.from_version }}"
         env:
           GH_TOKEN: ${{ github.token }}
       # Install dependencies
@@ -42,7 +42,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get --yes install createrepo-c
       # Generate repository files
       - name: Generate repository files
-        run: createrepo_c --no-database --baseurl=https://www.github.com --location-prefix="https://github.com/teragrep/${{ inputs.from_repository }}/releases/download/" --outputdir="${{ inputs.to_path_component }}/${{ inputs.from_version }}" workdir/
+        run: createrepo_c --no-database --baseurl=https://www.github.com --location-prefix="https://github.com/teragrep/${{ inputs.from_repository }}/releases/download/" --outputdir="${{ inputs.to_path_component }}/${{ inputs.from_version }}" "${{ runner.temp }}"
       # Create repofile
       - name: Create .repo file
         run: |
@@ -50,12 +50,12 @@ jobs:
           name=teragrep-${{ inputs.from_repository }}-${{ inputs.from_version }}
           baseurl=https://raw.githubusercontent.com/${{ inputs.to_repository }}/refs/heads/${{ inputs.to_branch }}/${{ inputs.to_path_component }}/${{ inputs.from_repository }}/${{ inputs.from_version }}
           gpgcheck=0
-          enabled=1' > "${{ inputs.to_path_component }}/${{ inputs.from_version }}/${{ env.from_repository }}-${{ inputs.from_version }}.repo"
+          enabled=1' > "${{ runner.temp }}/${{ inputs.from_version }}/${{ env.from_repository }}-${{ inputs.from_version }}.repo"
       # Deploy current repository
       - name: Deploy base repository files
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: "${{ inputs.to_path_component }}/${{ inputs.from_version }}"
+          folder: "${{ runner.temp }}/${{ inputs.from_version }}"
           target-folder: "${{ inputs.to_path_component }}/${{ inputs.from_repository }}/${{ inputs.from_version }}"
           branch: "${{ inputs.to_branch }}"
           token: ${{ secrets.GITHUB_TOKEN }}
