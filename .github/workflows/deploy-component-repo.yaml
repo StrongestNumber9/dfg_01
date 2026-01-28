@@ -22,9 +22,10 @@ on:
       token:
         required: true
         type: string
+concurrency:
+  group: dfg_01
 jobs:
   deploy_component_repo:
-    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       # Checkout the target repository

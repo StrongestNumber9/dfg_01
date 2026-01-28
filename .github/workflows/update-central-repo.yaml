@@ -19,10 +19,11 @@ on:
       token:
         required: true
         type: string
+concurrency:
+  group: dfg_01
 jobs:
   update_central_repo:
     runs-on: ubuntu-latest
-    permissions: write-all
     steps:
       # Checkout the target repository
       - name: Check out target repository
@@ -34,6 +35,12 @@ jobs:
       # Install dependencies
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get --yes install createrepo-c
+      # Debug
+      - name: DEBUG
+        run: |
+          find "${{ inputs.to_path_component }}";
+          git status;
+          git remote -v;
       # Merge repository files
       - name: Merge repositories
         run: mkdir -p "${{ runner.temp }}/releases" && mergerepo_c --all --no-database $(find "${{ inputs.to_path_component }}/" -maxdepth 1 -type d -not -name "${{ inputs.to_path_component }}" -printf "--repo=%p ") --outputdir "${{ runner.temp }}/releases"
