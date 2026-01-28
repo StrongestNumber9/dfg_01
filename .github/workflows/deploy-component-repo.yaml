@@ -19,6 +19,9 @@ on:
       to_path_component:
         default: 'component'
         type: string
+    secrets:
+      token:
+        required: true
 
 jobs:
   deploy_component_repo:
@@ -36,7 +39,7 @@ jobs:
       - name: Download release
         run: gh release download --repo "teragrep/${{ inputs.from_repository }}" --pattern "*.rpm" --dir "${{ runner.temp }}/${{ inputs.from_version }}" "${{ inputs.from_version }}"
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.token }}
       # Install dependencies
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get --yes install createrepo-c
@@ -58,5 +61,5 @@ jobs:
           folder: "${{ runner.temp }}/${{ inputs.from_version }}"
           target-folder: "${{ inputs.to_path_component }}/${{ inputs.from_repository }}/${{ inputs.from_version }}"
           branch: "${{ inputs.to_branch }}"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.token }}
           repository-name: "${{ inputs.to_repository }}"

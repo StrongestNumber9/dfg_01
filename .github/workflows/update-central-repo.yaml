@@ -16,6 +16,9 @@ on:
       to_path_central:
         default: 'central'
         type: string
+    secrets:
+      token:
+        required: true
 
 jobs:
   update_central_repo:
@@ -50,5 +53,5 @@ jobs:
           folder: "${{ runner.temp }}/releases"
           target-folder: "${{ inputs.to_path_central }}/releases"
           branch: "${{ inputs.to_branch }}"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.token }}
           repository-name: "${{ inputs.to_repository }}"

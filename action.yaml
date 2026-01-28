@@ -20,12 +20,12 @@ inputs:
   to_path_central:
     default: 'central'
     type: string
-  token:
-    required: true
-    type: string
   max_retries:
     default: 5
     type: string
+secrets:
+  token:
+    required: true
 runs:
   using: composite
   steps:
@@ -38,10 +38,11 @@ runs:
         --raw-field "from_version=${{ inputs.from_version }}" \
         --raw-field "to_repository=${{ inputs.to_repository }}" \
         --raw-field "to_branch=${{ inputs.to_branch }}" \
-        --raw-field "to_path_component=${{ inputs.to_path_component }}";
+        --raw-field "to_path_component=${{ inputs.to_path_component }}" \
+        --raw-field "token=${{ secrets.token }}";
         printf "DEPLOY_RUNID=%q\n" "$(gh run list --workflow=deploy-component-repo.yaml --repo "${ACTION_REPOSITORY}" --branch "${ACTION_REF}" --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
       env:
-        GH_TOKEN: ${{ inputs.token }}
+        GH_TOKEN: ${{ secrets.token }}
         ACTION_REPOSITORY: ${{ github.action_repository }}
         ACTION_REF: ${{ github.action_ref }}
       shell: bash
@@ -55,7 +56,7 @@ runs:
         done;
         if [[ "${retries}" == "${{ inputs.max_retries }} " ]]; do echo "Max retries encountered, failing"; exit 1; fi;
       env:
-        GH_TOKEN: ${{ inputs.token }}
+        GH_TOKEN: ${{ secrets.token }}
         ACTION_REPOSITORY: ${{ github.action_repository }}
       shell: bash
     - name: Update central repo
@@ -66,10 +67,11 @@ runs:
         --raw-field "to_repository=${{ inputs.to_repository }}" \
         --raw-field "to_branch=${{ inputs.to_branch }}" \
         --raw-field "to_path_component=${{ inputs.to_path_component }}" \
-        --raw-field "to_path_central=${{ inputs.to_path_central }}";
+        --raw-field "to_path_central=${{ inputs.to_path_central }}" \
+        --raw-field "token=${{ secrets.token }}";
         printf "UPDATE_RUNID=%q\n" "$(gh run list --workflow=update-central-repo.yaml --repo "${ACTION_REPOSITORY}" --branch "${ACTION_REF}" --limit 1 --json databaseId --jq '.[0].databaseId')" >> $GITHUB_ENV
       env:
-        GH_TOKEN: ${{ inputs.token }}
+        GH_TOKEN: ${{ secrets.token }}
         ACTION_REPOSITORY: ${{ github.action_repository }}
         ACTION_REF: ${{ github.action_ref }}
       shell: bash
@@ -83,5 +85,5 @@ runs:
         done;
         if [[ "${retries}" == "${{ inputs.max_retries }} " ]]; do echo "Max retries encountered, failing"; exit 1; fi;
       env:
-        GH_TOKEN: ${{ inputs.token }}
+        GH_TOKEN: ${{ secrets.token }}
       shell: bash
