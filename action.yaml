@@ -35,7 +35,7 @@ runs:
         createrepo_c --no-database --baseurl=https://www.github.com --location-prefix="https://github.com/${{ inputs.from_repository }}/releases/download/" --outputdir="${{ runner.temp }}/component-repo" "${{ runner.temp }}/rpm";
         export retries=0;
         while true; do
-          bash -c '
+          [ -d upstream/ ] && rm -rf upstream;
           git clone --branch "${{ inputs.to_branch }}" -- "https://oauth2:${{ inputs.token }}@github.com/${{ inputs.to_repository }}.git" upstream;
           find "upstream/${{ inputs.to_path }}/";
           mergerepo_c --all --no-database --repo="upstream/${{ inputs.to_path }}/releases" --repo="${{ runner.temp }}/component-repo" --outputdir "upstream/${{ inputs.to_path }}/";
@@ -52,15 +52,13 @@ runs:
             git status && \
             git commit -m "Adds ${{ inputs.from_repository }} version ${{ inputs.from_version }}" && \
             git push;
-          )' || (
-            rm -rf upstream/;
-            export retries="$((retries+1))";
-            echo "Retries: ${retries}/${{ inputs.max_retries }}";
-          )
+          ) || export retries="$((retries+1))";
+          echo "Retries: ${retries}/${{ inputs.max_retries }}";
           if [[ "${retries}" -gt "${{ inputs.max_retries }}" ]]; then
             echo "Max retries encountered, failing";
             exit 1;
           fi;
+          sleep 5;
         done;
       shell: bash
       env:
