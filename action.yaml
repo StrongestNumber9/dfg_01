@@ -61,3 +61,5 @@ runs:
           fi;
         done;
       shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
