@@ -35,6 +35,7 @@ jobs:
           repository: "${{ inputs.to_repository }}"
           sparse-checkout: '${{ inputs.to_path_component }}'
           ref: "${{ inputs.to_branch }}"
+          path: tmp
       # Download artifact(s)
       - name: Download release
         run: mkdir -p "${{ runner.temp }}/workdir" && gh release download --repo "teragrep/${{ inputs.from_repository }}" --pattern "*.rpm" --dir "${{ runner.temp }}/workdir/${{ inputs.from_version }}" "${{ inputs.from_version }}"
@@ -63,3 +64,4 @@ jobs:
           branch: "${{ inputs.to_branch }}"
           token: ${{ inputs.token }}
           repository-name: "${{ inputs.to_repository }}"
+        working-directory: tmp

@@ -31,6 +31,7 @@ jobs:
           persist-credentials: false
           repository: "${{ inputs.to_repository }}"
           ref: "${{ inputs.to_branch }}"
+          path: tmp
       # Install dependencies
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get --yes install createrepo-c
@@ -60,3 +61,4 @@ jobs:
           branch: "${{ inputs.to_branch }}"
           token: ${{ inputs.token }}
           repository-name: "${{ inputs.to_repository }}"
+        working-directory: tmp
