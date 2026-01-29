@@ -1,75 +1,95 @@
-= DFG_01 (DNF-Repo For GitHub)
+= DFG_01 DNF-Repo For GitHub
 
-A simple to use GitHub Action that creates and updates `dnf` compatible repository configuration and commits them to a specific branch.
+A simple to use GitHub Action that updates a dnf-compatible repository from `.rpm`s sourced from provided GitHub release.
 
 == Features
 
-- Creates and commits per-version repository configuration files from any GitHub release that contains `.rpm` files. This allows user to use a specific per-version `.repo` definition to install exactly the wanted version without having to specify it during install process.
+- The repository data points directly to `.rpm` files so no re-hosting of binaries is necessary.
 
-- Combines, commits and updates a special `releases` repository configuration files that is made from all of the other per-version repositories. This allows user to use a single `.repo` definition to upgrade and downgrade versions as wanted.
+- Supports any release from any GitHub repository as long as it has `.rpm` files present.
+
+- Supports configurable max retries to avoid merge issues and infinite loops.
+
+- Creates a ready to use `.repo` file.
+
+== Requirements
+
+You need to have a https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens[Personal Access Token] that has `read` permission to the `from_repository` and `write` permission to `to_repository`.
 
 == Limitations
 
-Pushing to only the current repository is supported.
+- Supports only GitHub repositories.
 
 == Usage
 
-The workflow needs to have `contents: write` https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#permissions[permissions].
-
-.Required permissions
-[source,yaml]
-----
-permissions:
-  contents: write
-----
-
 Add a `uses: teragrep/dfg_01@main` https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsuses[step] to your workflow.
 
-.Minimal configuration
+Examples uses a secret called `PAT_TOKEN` that contains the token. **DO NOT** hardcode the token at any point.
+
+.Minimum configuration with only required arguments
 [source,yaml]
 ----
-- name: Create repo
+- name: Update from release
   uses: teragrep/dfg_01@main
   with:
-    repository: teragrep/example-repository
-    version: 1.0.0
+    from_repository: teragrep/example-repository
+    from_version: 1.0.0
+    to_repository: teragrep/central-repository
+    token: ${{ secrets.PAT_TOKEN }}
 ----
 
-.Full configuration
+.Full configuration with optional arguments
 [source,yaml]
 ----
-- name: Create repo
+- name: Update from release
   uses: teragrep/dfg_01@main
   with:
-    repository: teragrep/example-repository
-    version: 1.0.0
-    to_branch: custom-branch
-    to_path: custom/path
+    from_repository: teragrep/example-repository
+    from_version: 1.0.0
+    to_repository: teragrep/central-repository
+    token: ${{ secrets.PAT_TOKEN }}
+    to_branch: arbitrary-git-branch
+    to_path: arbitrary-base-path
+    max_attempts: 1
 ----
 
 == Documentation
 
-These are arguments to be used in `with:` block.
+These are required arguments to be used in `with:` block.
 
 |===
-|Input argument|Description|Required|Default
+|Required input argument|Description|Example value
 
-|`repository`
-|The used GitHub repository in `user/repository` format
-|Yes
-|
+|`from_repository`
+|The source GitHub repository for the release. In `user/repository` format.
+|`teragrep/release-repo`
 
-|`version`
-|The exact release version.
-|Yes
-|
+|`from_version`
+|The *exact* release version.
+|`1.0.0`
+
+|`to_repository`
+|The target GitHub repository where the repodata is deployed to. In `user/repository` format.
+|`teragrep/dnf-repo`
+
+|`token`
+|The Personal Access Token to be used with downloading and committing.
+|`github_path_SOMEEXAMPLEKEY`
+|===
+
+These are optional arguments to be used in `with:` block.
+|===
+|Optional input argument|Description|Default value
 
 |`to_branch`
-|The branch where repository files are commited to
-|No
+|The branch where repository files are commited to.
 |`gh-pages`
 
 |`to_path`
 |The path where repository files are commited to. No trailing slash required.
-|No
-|`repo`
+|`central/releases`
+
+|`max_attempts`
+|How times should committing should be attempted.
+|`5`
+|===

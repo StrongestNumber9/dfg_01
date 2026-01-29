@@ -1,5 +1,5 @@
 name: DNF-Repo For GitHub
-description: 'Create a dnf-compatible repository from GitHub release'
+description: 'Update a dnf-compatible repository from GitHub release'
 inputs:
   # Descriptions for these input variables can be found in `README.adoc`
   from_repository:
