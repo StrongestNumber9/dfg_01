@@ -54,7 +54,7 @@ runs:
           ) || (
             rm -rf upstream/;
             export retries="$((retries+1))";
-            echo "Retries: ${retries}/${{ inputs.max_retries }};
+            echo "Retries: ${retries}/${{ inputs.max_retries }}";
           )
           if [[ "${retries}" -gt "${{ inputs.max_retries }}" ]]; then
             echo "Max retries encountered, failing";
