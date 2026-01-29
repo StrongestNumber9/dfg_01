@@ -35,7 +35,7 @@ runs:
         createrepo_c --no-database --baseurl=https://www.github.com --location-prefix="https://github.com/${{ inputs.from_repository }}/releases/download/" --outputdir="${{ runner.temp }}/component-repo" "${{ runner.temp }}/rpm";
         export attempt=0;
         while true; do
-          export attempt="$((attempt+1))
+          export attempt="$((attempt+1))";
           echo "Attempt ${attempt}/${{ inputs.max_attempts }}";
           [ -d upstream/ ] && rm -rf upstream;
           bash -c '
