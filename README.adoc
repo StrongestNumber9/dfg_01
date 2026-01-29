@@ -87,7 +87,7 @@ These are optional arguments to be used in `with:` block.
 
 |`to_path`
 |The path where repository files are commited to. No trailing slash required.
-|`central/releases`
+|`central`
 
 |`max_attempts`
 |How times should committing should be attempted.
