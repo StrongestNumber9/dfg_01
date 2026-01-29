@@ -64,4 +64,3 @@ jobs:
           branch: "${{ inputs.to_branch }}"
           token: ${{ inputs.token }}
           repository-name: "${{ inputs.to_repository }}"
-        working-directory: tmp
