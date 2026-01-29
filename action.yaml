@@ -37,7 +37,7 @@ runs:
         while true; do
           git clone --branch "${{ inputs.to_branch }}" -- "https://oauth2:${{ inputs.token }}@github.com/${{ inputs.to_repository }}.git" upstream;
           find "upstream/${{ inputs.to_path }}/";
-          mergerepo_c --all --no-database --repo="upstream/${{ inputs.to_path }}" --repo="${{ runner.temp }}/component-repo" --outputdir "upstream/${{ inputs.to_path }}/";
+          mergerepo_c --all --no-database --repo="upstream/${{ inputs.to_path }}/releases" --repo="${{ runner.temp }}/component-repo" --outputdir "upstream/${{ inputs.to_path }}/";
           echo '[teragrep-central-releases]
           name=teragrep-central-releases
           baseurl=https://raw.githubusercontent.com/${{ inputs.to_repository }}/refs/heads/${{ inputs.to_branch }}/${{ inputs.to_path }}/releases
