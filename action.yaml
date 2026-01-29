@@ -60,3 +60,4 @@ runs:
             exit 1;
           fi;
         done;
+      shell: bash
