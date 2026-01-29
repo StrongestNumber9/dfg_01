@@ -35,7 +35,7 @@ runs:
         createrepo_c --no-database --baseurl=https://www.github.com --location-prefix="https://github.com/${{ inputs.from_repository }}/releases/download/" --outputdir="${{ runner.temp }}/component-repo" "${{ runner.temp }}/rpm";
         export retries=0;
         while true; do
-          git clone --branch "${{ inputs.to_branch }}" -- "https://oauth2:${{ inputs.token }}github.com/${{ inputs.to_repository }}.git" upstream;
+          git clone --branch "${{ inputs.to_branch }}" -- "https://oauth2:${{ inputs.token }}@github.com/${{ inputs.to_repository }}.git" upstream;
           find "upstream/${{ inputs.to_path }}/";
           mergerepo_c --all --no-database --repo="upstream/${{ inputs.to_path }}" --repo="${{ runner.temp }}/update-repo" --outputdir "upstream/${{ inputs.to_path }}/";
           echo '[teragrep-central-releases]
