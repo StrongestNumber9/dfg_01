@@ -31,7 +31,7 @@ jobs:
       - name: Check out target repository
         uses: actions/checkout@v6
         with:
-#          persist-credentials: false
+          persist-credentials: false
           repository: "${{ inputs.to_repository }}"
           sparse-checkout: '${{ inputs.to_path_component }}'
           ref: "${{ inputs.to_branch }}"
