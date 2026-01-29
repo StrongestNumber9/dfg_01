@@ -1,6 +1,6 @@
 = DFG_01 DNF-Repo For GitHub
 
-A simple to use GitHub Action that updates a dnf-compatible repository from `.rpm`s sourced from provided GitHub release.
+A simple to use GitHub Action that updates a dnf-compatible repository from `.rpm` files sourced from provided GitHub release.
 
 == Features
 
