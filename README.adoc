@@ -1,35 +1,106 @@
-// Before publishing your new repository:
-// 1. Write the readme file
-// 2. Update the issues link in Contributing section in the readme file
-// 3. Update the discussion link in config.yml file in .github/ISSUE_TEMPLATE directory
+= DFG_01 DNF-Repo For GitHub
 
-= repo-template
-
-// Add a short description of your project. Tell what your project does and what it's used for.
-
-This is a template repository for Teragrep organization.
+A simple to use GitHub Action that updates a dnf-compatible repository from any `.rpm` files present in the working directory at the time of calling.
 
 == Features
 
-// List your project's features
+- Supports configurable max retries to avoid merge issues and infinite loops.
 
-== Documentation
+- Creates a ready to use `.repo` file.
 
-See the official documentation on https://docs.teragrep.com[docs.teragrep.com].
+== Requirements
+
+You need to have a https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens[Personal Access Token] that has `write` permission to `to_repository` and pass that as the `token` argument.
 
 == Limitations
 
-// If your project has limitations, please list them. Otherwise remove this section.
+- Supports deploying only to GitHub repositories.
 
-== How to [compile/use/implement]
+- The repository file's checksum will not be included in the metadata filename.
 
-// add instructions how people can start to use your project
+== Usage
+
+Add a `uses: teragrep/dfg_01@main` https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idstepsuses[step] to your workflow.
+
+Examples uses a secret called `PAT_TOKEN` that contains the token. **DO NOT** hardcode the token at any point.
+
+.Minimum configuration with only required arguments
+[source,yaml]
+----
+- name: Update from release
+  uses: teragrep/dfg_01@main
+  with:
+    from_repository: teragrep/example-repository
+    from_version: 1.0.0
+    to_repository: teragrep/central-repository
+    token: ${{ secrets.PAT_TOKEN }}
+    files: target/wanted-rpm-*.rpm
+----
+
+.Full configuration with optional arguments
+[source,yaml]
+----
+- name: Update from release
+  uses: teragrep/dfg_01@main
+  with:
+    from_repository: teragrep/example-repository
+    from_version: 1.0.0
+    to_repository: teragrep/central-repository
+    token: ${{ secrets.PAT_TOKEN }}
+    files: target/wanted-rpm-*.rpm
+    to_branch: arbitrary-git-branch
+    to_path: arbitrary-base-path
+    max_attempts: 1
+----
+
+== Documentation
+
+These are required arguments to be used in `with:` block.
+
+|===
+|Required input argument|Description|Example value
+
+|`from_repository`
+|The source GitHub repository for the release. In `user/repository` format.
+|`teragrep/release-repo`
+
+|`from_version`
+|The *exact* release version.
+|`1.0.0`
+
+|`to_repository`
+|The target GitHub repository where the repodata is deployed to. In `user/repository` format.
+|`teragrep/dnf-repo`
+
+|`token`
+|The Personal Access Token to be used with pushing to the target repository.
+|`github_pat_SOMEEXAMPLEKEY`
+
+|`files`
+|The files that are used for making the repodata. Supports glob.
+|`target/wanted-rpm-*.rpm`
+|===
+
+These are optional arguments to be used in `with:` block.
+|===
+|Optional input argument|Description|Default value
+
+|`to_branch`
+|The branch where repository files are commited to.
+|`gh-pages`
+
+|`to_path`
+|The path where repository files are commited to. No trailing slash required.
+|`central`
+
+|`max_attempts`
+|How times should committing should be attempted.
+|`5`
+|===
 
 == Contributing
 
-// Change the repository name in the issues link to match with your project's name
-
-You can involve yourself with our project by https://github.com/teragrep/repo-template/issues/new/choose[opening an issue] or submitting a pull request.
+You can involve yourself with our project by https://github.com/teragrep/dfg_01/issues/new/choose[opening an issue] or submitting a pull request.
 
 Contribution requirements:
 
