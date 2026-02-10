@@ -51,7 +51,7 @@ runs:
         for file in ${{ inputs.files }}; do ln --verbose "${{ github.workspace }}/${file}" "${DFG_01_TMPDIR}/rpm/${{ inputs.from_version }}/$(basename ${file})"; done;
         sudo apt-get update;
         sudo apt-get --yes install createrepo-c;
-        export RELATIVE_PATH="$(realpath --strip --relative-to=/ "${{ inputs.from_repository }}/releases/download/")";
+        export RELATIVE_PATH="$(realpath --strip --relative-to="https://github.com/${{ inputs.from_repository }}/releases/download/" "https://github.com/")";
         echo "Made RELATIVE_PATH: ${RELATIVE_PATH}";
         createrepo_c --verbose --no-database --location-prefix="${RELATIVE_PATH}/${{ inputs.from_repository }}/releases/download/" --outputdir="${DFG_01_TMPDIR}/component-repo" "${DFG_01_TMPDIR}/rpm";
         git config --global user.email "${{ github.actor }}@users.noreply.github.com";
