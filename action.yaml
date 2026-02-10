@@ -51,7 +51,7 @@ runs:
         for file in ${{ inputs.files }}; do ln --verbose "${{ github.workspace }}/${file}" "${DFG_01_TMPDIR}/rpm/${{ inputs.from_version }}/$(basename ${file})"; done;
         sudo apt-get update;
         sudo apt-get --yes install createrepo-c;
-        export RELATIVE_PATH="realpath --strip --relative-to=/ ${{ inputs.from_repository }}/releases/download/";
+        export RELATIVE_PATH="$(realpath --strip --relative-to=/ "${{ inputs.from_repository }}/releases/download/")";
         echo "Made RELATIVE_PATH: ${RELATIVE_PATH}";
         createrepo_c --verbose --no-database --location-prefix="${RELATIVE_PATH}/${{ inputs.from_repository }}/releases/download/" --outputdir="${DFG_01_TMPDIR}/component-repo" "${DFG_01_TMPDIR}/rpm";
         git config --global user.email "${{ github.actor }}@users.noreply.github.com";
@@ -68,7 +68,7 @@ runs:
           bash -c '
             set -e;
             git clone --branch "${{ inputs.to_branch }}" -- "git@github.com:${{ inputs.to_repository }}.git" upstream;
-            mergerepo_c --verbose --simple-md-filenames --all --no-database --repo="upstream/${{ inputs.to_path }}/releases" --repo="${DFG_01_TMPDIR}/component-repo" --outputdir "${DFG_01_TMPDIR}/merged-repo";
+            mergerepo_c --verbose --omit-baseurl --simple-md-filenames --all --no-database --repo="upstream/${{ inputs.to_path }}/releases" --repo="${DFG_01_TMPDIR}/component-repo" --outputdir "${DFG_01_TMPDIR}/merged-repo";
             rm --recursive --force "upstream/${{ inputs.to_path }}/releases/repodata/";
             mv --verbose "${DFG_01_TMPDIR}/merged-repo/repodata/" "upstream/${{ inputs.to_path }}/releases/repodata";
             echo -e "[${{ inputs.repo_name }}]\nname=${{ inputs.repo_name }}\nbaseurl=${REPO_BASEURL}/releases\ngpgcheck=1\ngpgkey=${REPO_BASEURL}/releases/${{ inputs.repo_name }}-gpg-key.pub\nenabled=1" > "upstream/${{ inputs.to_path }}/releases/${{ inputs.repo_name }}.repo";
