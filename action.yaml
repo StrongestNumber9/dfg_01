@@ -62,11 +62,12 @@ runs:
           export attempt="$((attempt+1))";
           echo "Attempt ${attempt}/${{ inputs.max_attempts }}";
           [ -d upstream/ ] && rm --recursive --force upstream;
-          rm --recursive --force "${DFG_01_TMPDIR}/merged-repo/*" "${DFG_01_TMPDIR}/merged-repo/.repodata/";
+          find "${DFG_01_TMPDIR}/merged-repo/" -mindepth 1 -delete;
           bash -c '
             set -e;
             git clone --branch "${{ inputs.to_branch }}" -- "git@github.com:${{ inputs.to_repository }}.git" upstream;
             if [ ! -d "upstream/${{ inputs.to_path }}/releases" ]; then
+              echo "Upstream repository not found, creating a new one from scratch";
               mkdir --parents "upstream/${{ inputs.to_path }}/releases";
               createrepo_c --verbose --no-database --simple-md-filenames --compress-type=gz --general-compress-type=gz --outputdir="upstream/${{ inputs.to_path }}/releases" "upstream/${{ inputs.to_path }}/releases";
             fi;
