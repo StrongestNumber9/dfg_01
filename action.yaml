@@ -51,7 +51,7 @@ runs:
         for file in ${{ inputs.files }}; do ln --verbose "${{ github.workspace }}/${file}" "${DFG_01_TMPDIR}/packages/$(basename ${file})"; done;
         sudo apt-get update;
         sudo apt-get --yes install createrepo-c;
-        createrepo_c --verbose --no-database --outputdir="${DFG_01_TMPDIR}/packages" "${DFG_01_TMPDIR}/rpm";
+        createrepo_c --verbose --no-database --outputdir="${DFG_01_TMPDIR}/packages" "${DFG_01_TMPDIR}/packages";
         git config --global user.email "${{ github.actor }}@users.noreply.github.com";
         git config --global user.name "${{ github.actor }}";
         echo "${GH_SSH_KEY}" > "${DFG_01_TMPDIR}/ssh.key";
