@@ -18,7 +18,7 @@ inputs:
     default: 'gh-pages'
     type: string
   to_path:
-    default: 'central'
+    default: 'central/releases'
     type: string
   max_attempts:
     default: 5
@@ -30,6 +30,9 @@ inputs:
     required: true
     type: string
   repo_baseurl:
+    type: string
+  repo_baseurl_append_path:
+    default: true
     type: string
   repo_name:
     default: 'teragrep-central-releases'
@@ -46,8 +49,11 @@ runs:
           export REPO_BASEURL="https://raw.githubusercontent.com/${{ inputs.to_repository }}/refs/heads/${{ inputs.to_branch }}/${{ inputs.to_path }}";
           echo "Custom baseurl was not set, using '${REPO_BASEURL}'";
         else
-          export REPO_BASEURL="${{ inputs.repo_baseurl }}/${{ inputs.to_path }}";
-          echo "Detected baseurl, set to '${REPO_BASEURL}'";
+          export REPO_BASEURL="${{ inputs.repo_baseurl }}";
+          if [ "${{ inputs.repo_baseurl_append_path }}" == "true" ]; then
+            echo "Appending '${{ inputs.to_path }}' to baseurl";
+          fi;
+          echo "Detected custom baseurl, set to '${REPO_BASEURL}'";
         fi;
 
         if [ "${{ inputs.absolute_links }}" == "true" ]; then
@@ -79,16 +85,16 @@ runs:
           bash -c '
             set -e;
             git clone --branch "${{ inputs.to_branch }}" -- "git@github.com:${{ inputs.to_repository }}.git" upstream;
-            if [ ! -d "upstream/${{ inputs.to_path }}/releases" ]; then
+            if [ ! -d "upstream/${{ inputs.to_path }}" ]; then
               echo "Upstream repository not found, creating a new one from scratch";
-              mkdir --parents "upstream/${{ inputs.to_path }}/releases";
-              createrepo_c --verbose --no-database --simple-md-filenames --compress-type=gz --general-compress-type=gz --outputdir="upstream/${{ inputs.to_path }}/releases" "upstream/${{ inputs.to_path }}/releases";
+              mkdir --parents "upstream/${{ inputs.to_path }}";
+              createrepo_c --verbose --no-database --simple-md-filenames --compress-type=gz --general-compress-type=gz --outputdir="upstream/${{ inputs.to_path }}" "upstream/${{ inputs.to_path }}";
             fi;
-            mergerepo_c --verbose --omit-baseurl --simple-md-filenames --all --no-database --repo="upstream/${{ inputs.to_path }}/releases" --repo="${DFG_01_TMPDIR}/" --outputdir "${DFG_01_TMPDIR}/merged-repo";
-            rm --recursive --force "upstream/${{ inputs.to_path }}/releases/repodata/";
-            mv --verbose "${DFG_01_TMPDIR}/merged-repo/repodata/" "upstream/${{ inputs.to_path }}/releases/repodata";
-            echo -e "[${{ inputs.repo_name }}]\nname=${{ inputs.repo_name }}\nbaseurl=${REPO_BASEURL}/releases\ngpgcheck=1\ngpgkey=${REPO_BASEURL}/releases/${{ inputs.repo_name }}-gpg-key.pub\nenabled=1" > "upstream/${{ inputs.to_path }}/releases/${{ inputs.repo_name }}.repo";
-            echo "${{ inputs.gpg_public_key }}" > "upstream/${{ inputs.to_path }}/releases/${{ inputs.repo_name }}-gpg-key.pub";
+            mergerepo_c --verbose --omit-baseurl --simple-md-filenames --all --no-database --repo="upstream/${{ inputs.to_path }}" --repo="${DFG_01_TMPDIR}/" --outputdir "${DFG_01_TMPDIR}/merged-repo";
+            rm --recursive --force "upstream/${{ inputs.to_path }}/repodata/";
+            mv --verbose "${DFG_01_TMPDIR}/merged-repo/repodata/" "upstream/${{ inputs.to_path }}/repodata";
+            echo -e "[${{ inputs.repo_name }}]\nname=${{ inputs.repo_name }}\nbaseurl=${REPO_BASEURL}\ngpgcheck=1\ngpgkey=${REPO_BASEURL}/${{ inputs.repo_name }}-gpg-key.pub\nenabled=1" > "upstream/${{ inputs.to_path }}/${{ inputs.repo_name }}.repo";
+            echo "${{ inputs.gpg_public_key }}" > "upstream/${{ inputs.to_path }}/${{ inputs.repo_name }}-gpg-key.pub";
             cd "upstream/${{ inputs.to_path }}";
             git add .;
             git commit --message "Adds ${{ inputs.from_repository }} version ${{ inputs.from_version }}";

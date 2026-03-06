@@ -56,6 +56,7 @@ Examples uses a secret called `DEPLOY_KEY` that contains the key. **DO NOT** har
     repo_baseurl: https://custom.repo.example.com/example-repo
     repo_name: custom-repo-example
     absolute_links: false
+    repo_baseurl_append_path: false
 ----
 
 == Documentation
@@ -100,15 +101,19 @@ These are optional arguments to be used in `with:` block.
 
 |`to_path`
 |The path where repository files are commited to. No trailing slash required.
-|`central`
+|`central/releases`
 
 |`max_attempts`
 |How times should committing should be attempted.
 |`5`
 
 |`repo_baseurl`
-|The baseurl used in the `.repo` file. Note that it is evaluated to the default value if left empty, and that it can't contain variables if explicitly set. The value of `to_path` is appended to it.
+|The baseurl used in the `.repo` file. Note that it is evaluated to the default value if left empty, and that it can't contain variables if explicitly set.
 |`https://raw.githubusercontent.com/${{ inputs.to_repository }}/refs/heads/${{ inputs.to_branch }}/${{ inputs.to_path }}`
+
+|`repo_baseurl_append_path`
+|Should the value of `to_path` to be appended to `repo_baseurl` if set.
+|`true`
 
 |`repo_name`
 |Sets the repository name.
