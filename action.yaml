@@ -57,7 +57,7 @@ runs:
         fi;
 
         if [ "${{ inputs.location_prefix }}" == "" ]; then
-          export LOCATION_PREFIX="https://github.com/${{ inputs.from_repository }}/releases/download/";
+          export LOCATION_PREFIX="https://github.com/${{ inputs.from_repository }}/releases/download/${{ inputs.from_version }}/";
           echo "Location prefix was not set, using default '${LOCATION_PREFIX}'";
         else
           export LOCATION_PREFIX="${{ inputs.location_prefix }}";
