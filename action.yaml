@@ -52,6 +52,7 @@ runs:
           export REPO_BASEURL="${{ inputs.repo_baseurl }}";
           if [ "${{ inputs.repo_baseurl_append_path }}" == "true" ]; then
             echo "Appending '${{ inputs.to_path }}' to baseurl";
+            export REPO_BASEURL="${REPO_BASEURL}/${{ inputs.to_path }}";
           fi;
           echo "Detected custom baseurl, set to '${REPO_BASEURL}'";
         fi;
