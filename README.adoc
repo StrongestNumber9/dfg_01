@@ -121,7 +121,7 @@ These are optional arguments to be used in `with:` block.
 
 |`location_prefix`
 |Expert setting. Sets the location prefix. Note that it is evaluated to the default value if left empty, and that it can't contain variables if explicitly set. Mostly useful only when using a repository manager that requires relative paths and an url rewriting proxy which redirects requests to the correct location.
-|`https://github.com/${{ inputs.from_repository }}/releases/download/`
+|`https://github.com/${{ inputs.from_repository }}/releases/download/${{ inputs.from_version }}/`
 |===
 
 == Contributing
