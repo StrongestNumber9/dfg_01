@@ -55,6 +55,7 @@ Examples uses a secret called `DEPLOY_KEY` that contains the key. **DO NOT** har
     max_attempts: 1
     repo_baseurl: https://custom.repo.example.com/example-repo
     repo_name: custom-repo-example
+    absolute_links: false
 ----
 
 == Documentation
@@ -112,6 +113,12 @@ These are optional arguments to be used in `with:` block.
 |`repo_name`
 |Sets the repository name.
 |`teragrep-central-releases`
+
+|`absolute_links`
+|When true: Location prefix is set to `https://github.com/${{ inputs.from_repository }}/releases/download/`.
+
+When false: Location prefix is set to `packages/`. This is only useful when using a repository manager that expects files to be relative to the repository metadata. Requires a proxy with url redirecting mechanism to be truly functional.
+|`true`
 |===
 
 == Contributing
