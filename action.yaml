@@ -65,8 +65,8 @@ runs:
         fi;
 
         export DFG_01_TMPDIR="$(mktemp --directory --tmpdir=${{ runner.temp }})";
-        mkdir --parents "${DFG_01_TMPDIR}/packages" "${DFG_01_TMPDIR}/component-repo" "${DFG_01_TMPDIR}/merged-repo";
-        for file in ${{ inputs.files }}; do ln --verbose "${{ github.workspace }}/${file}" "${DFG_01_TMPDIR}/packages/$(basename ${file})"; done;
+        mkdir --parents "${DFG_01_TMPDIR}/packages/${{ inputs.from_version }}" "${DFG_01_TMPDIR}/component-repo" "${DFG_01_TMPDIR}/merged-repo";
+        for file in ${{ inputs.files }}; do ln --verbose "${{ github.workspace }}/${file}" "${DFG_01_TMPDIR}/packages/${{ inputs.from_version }}/$(basename ${file})"; done;
         sudo apt-get update;
         sudo apt-get --yes install createrepo-c;
         createrepo_c --verbose --no-database --location-prefix="${LOCATION_PREFIX}" --outputdir="${DFG_01_TMPDIR}/component-repo" "${DFG_01_TMPDIR}/packages";
