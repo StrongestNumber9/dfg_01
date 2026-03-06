@@ -56,7 +56,7 @@ Examples uses a secret called `DEPLOY_KEY` that contains the key. **DO NOT** har
     repo_baseurl: https://custom.repo.example.com/example-repo
     repo_name: custom-repo-example
     location_prefix: 'packages/'
-    repo_baseurl_append_path: false
+    repo_baseurl_append_path: true
 ----
 
 == Documentation
@@ -112,8 +112,8 @@ These are optional arguments to be used in `with:` block.
 |`https://raw.githubusercontent.com/${{ inputs.to_repository }}/refs/heads/${{ inputs.to_branch }}/${{ inputs.to_path }}`
 
 |`repo_baseurl_append_path`
-|Should the value of `to_path` to be appended to `repo_baseurl` if set.
-|`true`
+|Append `to_path` to `repo_baseurl`. Only effective when set to `true` and `repo_baseurl` is set to non-default value.
+|`false`
 
 |`repo_name`
 |Sets the repository name.

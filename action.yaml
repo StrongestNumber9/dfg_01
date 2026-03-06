@@ -32,7 +32,7 @@ inputs:
   repo_baseurl:
     type: string
   repo_baseurl_append_path:
-    default: true
+    default: false
     type: string
   repo_name:
     default: 'teragrep-central-releases'
